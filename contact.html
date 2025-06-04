@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact - Longhorn Stream Team</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff8f0;
+      color: #3e3e3e;
+    }
+    header {
+      background-color: #bf5700;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    nav {
+      background: #8a4b00;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.75rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .contact-section {
+      padding: 3rem 2rem;
+      max-width: 700px;
+      margin: auto;
+      text-align: center;
+    }
+    .contact-section h2 {
+      font-size: 2rem;
+      color: #bf5700;
+      margin-bottom: 1rem;
+    }
+    .contact-section p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, textarea {
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #bf5700;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #a64900;
+    }
+    footer {
+      background-color: #8a4b00;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <img src="Images/Subject (1).png" alt="Longhorn Stream Team Logo" style="height: 80px; width: auto;" />
+      <div>
+        <h1 style="margin: 0;">Longhorn Stream Team</h1>
+        <p style="margin: 0;">Student Science for Water Quality Monitoring</p>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="data_sub.html">Data Submission</a>
+    <a href="info.html">More Info</a>
+  </nav>
+
+  <section class="contact-section">
+    <h2>Contact Us</h2>
+    <p>Have questions or want to get involved? Reach out and we'll get back to you soon!</p>
+    <form action="mailto:hfdavis@utexas.edu" method="post" enctype="text/plain">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <footer>
+    &copy; 2025 Longhorn Stream Team. All rights reserved.
+  </footer>
+</body>
+</html>
