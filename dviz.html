@@ -2,53 +2,211 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Water Quality Chart - Longhorn Stream Team</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Water Quality Visualization - Longhorn Stream Team</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; padding: 20px; }
+    /* Page styling */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background:#fff8f0;
+      color:#3e3e3e;
+      padding: 1rem;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #bf5700;
+      margin-top: 1rem;
+    }
+    /* Navigation styling consistent with your other pages */
+    nav {
+      background: #8a4b00;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.75rem 0;
+      margin-bottom: 2rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* Controls styling */
+    #controls {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    label, input, button {
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 0 0.5rem 0 0;
+    }
+    input {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-family: inherit;
+    }
+    button {
+      background-color: #bf5700;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 7px 15px;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #8a4b00;
+    }
+    /* Chart canvas styling */
+    canvas {
+      max-width: 800px;
+      margin: 2rem auto;
+      display: block;
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    /* Message styling */
+    #message {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="data_sub.html">Data Submission</a>
+    <a href="dviz.html">Data Visualization</a>
+    <a href="info.html">More Info</a>
+  </nav>
+
   <h1>Water Quality Data Chart</h1>
-  <div id="chart"></div>
 
+  <!-- Stream Selector -->
+  <div id="controls">
+    <label for="streamSelect">Select Stream:</label>
+    <input type="text" id="streamSelect" placeholder="Type stream name (e.g. Shoal Creek)" />
+    <button id="loadDataBtn">Load Data</button>
+  </div>
+
+  <p id="message"></p>
+
+  <!-- Charts -->
+  <canvas id="phChart"></canvas>
+  <canvas id="doChart"></canvas>
+  <canvas id="conductivityChart"></canvas>
+  <canvas id="airTempChart"></canvas>
+  <canvas id="waterTempChart"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // URL of your backend data route
-    const dataUrl = 'https://lh-stream-team-be.onrender.com/get_data';
+    let charts = {};
 
-    fetch(dataUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (data.length === 0) {
-          document.getElementById('chart').innerText = 'No data available yet.';
-          return;
+    function createChart(ctx, label, data, color) {
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.date),
+          datasets: [{
+            label: label,
+            data: data.map(d => d.value),
+            borderColor: color,
+            backgroundColor: color,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'time',
+              time: { unit: 'day', tooltipFormat: 'MMM dd, yyyy' },
+              title: { display: true, text: 'Date' }
+            },
+            y: {
+              title: { display: true, text: label }
+            }
+          },
+          plugins: {
+            tooltip: { mode: 'nearest', intersect: false }
+          }
         }
-
-        // Extract arrays for chart (example: pH values)
-        const phValues = data.map(row => parseFloat(row.ph));
-        // You can also plot other parameters similarly
-
-        // Create a trace for pH values
-        const trace = {
-          x: phValues.map((_, i) => i + 1),  // Just use submission index for X axis
-          y: phValues,
-          mode: 'lines+markers',
-          name: 'pH',
-          type: 'scatter'
-        };
-
-        const layout = {
-          title: 'pH Values from Submissions',
-          xaxis: { title: 'Submission Number' },
-          yaxis: { title: 'pH' }
-        };
-
-        Plotly.newPlot('chart', [trace], layout);
-      })
-      .catch(error => {
-        console.error('Error loading data:', error);
-        document.getElementById('chart').innerText = 'Error loading data.';
       });
+    }
+
+    function parseDate(str) {
+      return new Date(str);
+    }
+
+    function transformData(rawData, key) {
+      return rawData.map(d => ({
+        date: parseDate(d.date),
+        value: d[key] !== null ? +d[key] : null
+      })).filter(d => d.value !== null);
+    }
+
+    function destroyCharts() {
+      Object.values(charts).forEach(chart => chart.destroy());
+      charts = {};
+    }
+
+    document.getElementById('loadDataBtn').addEventListener('click', () => {
+      const stream = document.getElementById('streamSelect').value.trim();
+      const msgEl = document.getElementById('message');
+
+      if (!stream) {
+        msgEl.textContent = 'Please enter a stream name.';
+        destroyCharts();
+        return;
+      }
+
+      msgEl.textContent = 'Loading data...';
+
+      fetch(`https://lh-stream-team-be.onrender.com/get_data?stream=${encodeURIComponent(stream)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            msgEl.textContent = 'Error: ' + data.error;
+            destroyCharts();
+            return;
+          }
+          if (data.length === 0) {
+            msgEl.textContent = 'No data available yet for this stream.';
+            destroyCharts();
+            return;
+          }
+          msgEl.textContent = '';
+
+          destroyCharts();
+
+          charts.phChart = createChart(document.getElementById('phChart').getContext('2d'), 'pH', transformData(data, 'ph'), 'rgba(75,192,192,1)');
+          charts.doChart = createChart(document.getElementById('doChart').getContext('2d'), 'Dissolved Oxygen (mg/L)', transformData(data, 'do'), 'rgba(255,99,132,1)');
+          charts.conductivityChart = createChart(document.getElementById('conductivityChart').getContext('2d'), 'Conductivity (µS/cm)', transformData(data, 'conductivity'), 'rgba(54,162,235,1)');
+          charts.airTempChart = createChart(document.getElementById('airTempChart').getContext('2d'), 'Air Temperature (°C)', transformData(data, 'airTemp'), 'rgba(255,206,86,1)');
+          charts.waterTempChart = createChart(document.getElementById('waterTempChart').getContext('2d'), 'Water Temperature (°C)', transformData(data, 'waterTemp'), 'rgba(153,102,255,1)');
+        })
+        .catch(() => {
+          msgEl.textContent = 'Network error while loading data.';
+          destroyCharts();
+        });
+    });
   </script>
 </body>
 </html>
