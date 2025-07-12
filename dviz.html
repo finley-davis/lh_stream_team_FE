@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Water Quality Chart - Longhorn Stream Team</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; padding: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Water Quality Data Chart</h1>
+  <div id="chart"></div>
+
+  <script>
+    // URL of your backend data route
+    const dataUrl = 'https://lh-stream-team-be.onrender.com/get_data';
+
+    fetch(dataUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          document.getElementById('chart').innerText = 'No data available yet.';
+          return;
+        }
+
+        // Extract arrays for chart (example: pH values)
+        const phValues = data.map(row => parseFloat(row.ph));
+        // You can also plot other parameters similarly
+
+        // Create a trace for pH values
+        const trace = {
+          x: phValues.map((_, i) => i + 1),  // Just use submission index for X axis
+          y: phValues,
+          mode: 'lines+markers',
+          name: 'pH',
+          type: 'scatter'
+        };
+
+        const layout = {
+          title: 'pH Values from Submissions',
+          xaxis: { title: 'Submission Number' },
+          yaxis: { title: 'pH' }
+        };
+
+        Plotly.newPlot('chart', [trace], layout);
+      })
+      .catch(error => {
+        console.error('Error loading data:', error);
+        document.getElementById('chart').innerText = 'Error loading data.';
+      });
+  </script>
+</body>
+</html>
