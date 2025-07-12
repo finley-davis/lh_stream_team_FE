@@ -193,7 +193,7 @@
       };
     
       // Send the form data to your Flask server
-      fetch("http://localhost:5000/submit", {
+      fetch("https://longhorn-backend.onrender.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -203,14 +203,14 @@
       .then(response => response.json())
       .then(result => {
         if (result.message) {
-          document.getElementById("csvOutput").textContent = "✅ " + result.message;
+          document.getElementById("csvOutput").textContent = "good " + result.message;
         } else if (result.error) {
-          document.getElementById("csvOutput").textContent = "❌ Error: " + result.error;
+          document.getElementById("csvOutput").textContent = "bad Error: " + result.error;
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        document.getElementById("csvOutput").textContent = "❌ Network error!";
+        document.getElementById("csvOutput").textContent = "bad Network error!";
       });
     });
     </script>
