@@ -6,6 +6,12 @@
   <title>Data Submission - Longhorn Stream Team</title>
   <style>
     /* Your existing styles */
+      header {
+      background-color: #bf5700;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
     body { font-family: 'Segoe UI', sans-serif; background-color: #fff8f0; color: #3e3e3e; margin:0; padding:0; }
     #data-submission { max-width: 600px; margin: 2rem auto; background:#fff3e0; padding: 2rem; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
     form { display: flex; flex-direction: column; gap: 15px; }
@@ -14,9 +20,40 @@
     button { background-color: #bf5700; color: white; padding: 12px; border:none; border-radius: 4px; cursor:pointer; font-weight:bold; }
     button:hover { background-color: #8a4b00; }
     #csvOutput { margin-top: 20px; background: #f4f4f4; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
+    nav {
+      background: #8a4b00;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.75rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <img src="Images/Subject (1).png" alt="Longhorn Stream Team Logo" style="height: 80px; width: auto;" />
+      <div>
+        <h1 style="margin: 0;">Longhorn Stream Team</h1>
+        <p style="margin: 0;">Student Science for Water Quality Monitoring</p>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <a href="map.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="info.html">More Info</a>
+    <a href="dviz.html">Charts</a>
+    <!--<a href="contact.html">Contact</a>-->
+  </nav>
   <section id="data-submission">
     <h2>Core Testing Data Submission</h2>
     <form id="dataForm">
